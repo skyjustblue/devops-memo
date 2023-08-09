@@ -15,6 +15,7 @@ release = 'v.1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 
+<<<<<<< HEAD
 #extensions = ['recommonmark','sphinx_markdown_tables']
 from recommonmark.parser import CommonMarkParser
 
@@ -22,6 +23,15 @@ source_parsers = {
     '.md': CommonMarkParser,
 }
 source_suffix = ['.rst', '.md']
+=======
+extensions = ['recommonmark','sphinx_markdown_tables']
+# from recommonmark.parser import CommonMarkParser
+
+# source_parsers = {
+#     '.md': CommonMarkParser,
+# }
+# source_suffix = ['.rst', '.md']
+>>>>>>> a88d597... 11
 
 
 templates_path = ['_templates']
