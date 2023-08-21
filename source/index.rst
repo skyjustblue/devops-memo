@@ -3,16 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to 运维笔记's documentation!
-====================================
+运维笔记
+===========
 
 .. toctree::
-   :maxdepth: 3
-   :caption: 运维笔记:
+   :maxdepth: 2
+   :caption: 系统
 
-   Linux/index
+   Linux基础/index
+   网络/index
+   
 
+.. toctree::
+   :maxdepth: 2
+   :caption: 服务
 
+   Redis/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 其他
+
+   其他/index
 
 Indices and tables
 ==================
