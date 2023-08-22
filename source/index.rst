@@ -10,7 +10,7 @@
    :maxdepth: 2
    :caption: 系统
 
-   Linux基础/index
+   Linux/index
    网络/index
    
 

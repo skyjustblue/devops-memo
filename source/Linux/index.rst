@@ -6,6 +6,7 @@ Linux
     :caption: 基础
 
     安装Rocky8.5.md
+    umask.md
     swap.md
 
 .. toctree::
