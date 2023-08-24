@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-运维笔记
+学习记录
 ===========
 
 .. toctree::
