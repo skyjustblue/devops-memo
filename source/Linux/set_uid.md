@@ -1,4 +1,4 @@
-# set_ui（u的特殊权限）
+# set_uid（u的特殊权限）
 setuid（即suid：保存设置用户ID）：当一个可执行文件或程序设置为setuid时，任何一个用户执行这个进程时对应的euid(effective user id)都会被设置为文件所有者的uid。
 
 ## 扩展知识ruid和euid
