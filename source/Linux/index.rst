@@ -13,6 +13,8 @@ Linux
     set_gid.md
     stick_bit.md
     硬链接和软链接.md
+    find.md
+    后缀名.md
     swap.md
 
 

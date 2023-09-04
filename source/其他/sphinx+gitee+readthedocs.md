@@ -142,7 +142,7 @@ html_static_path = ['_static']
 1. ### 安装autobuild工具
 `$ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple sphinx-autobuild`    
 
-2. ### 编译启动http页面     
+2. ### 启动本地http页面     
 `$ sphinx-autobuild source build/html`
 >在本地浏览器输入127.0.0.1:8000在线预览
 
