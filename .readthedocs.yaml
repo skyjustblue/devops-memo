@@ -10,9 +10,7 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-  commands:
-    - pip install recommonmark
-    - recommonmark --settings docs/pelicanconf.py --output _readthedocs/html/ docs/
+
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
