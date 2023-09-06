@@ -11,14 +11,18 @@
 
 ## Sphinx创建文档
 > Sphinx是一个基于Python的文档生成项目，开始是用来生成 Python 官方文档的工具，更多介绍可参考官网：https://www.sphinx.org.cn/ 。   
-### 1. 安装Sphinx   
+### 安装Sphinx   
 Sphinx的GitHub地址：https://github.com/sphinx-doc/sphinx  
-pip安装Sphinx    
-`$ pip install -U sphinx`   
-2. ### 创建文档
+
+pip安装Sphinx 
+
+    $ pip install -U sphinx  
+### 创建文档
 先将远程github仓库clone到本地，这个仓库是你要托管文档的仓库，如果没有就新建一个。   
-clone到本地后，在项目根目录创建一个docs目录，cd进入docs目录，执行如下命令   
-`$ sphinx-quickstart`
+clone到本地后，在项目根目录创建一个docs目录，cd进入docs目录，执行如下命令 
+
+    $ sphinx-quickstart
+
 ```
 Welcome to the Sphinx 4.2.0 quickstart utility.
 
@@ -77,9 +81,10 @@ where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
 - source/_templates 存放模板文件
 - source/conf.py 项目配置文件，上面的配置可以在这里面修改
 - source/index.rst 首页
-3. ### 编译
-对rst文件进行编译生成HTML及相关静态文件：   
-`$ make html`   
+### 编译
+对rst文件进行编译生成HTML及相关静态文件：
+
+    $ make html   
 ```
 Running Sphinx v4.2.0
 loading translations [zh_CN]... done
@@ -124,9 +129,10 @@ The HTML pages are in build\html.
 ```
 
 >index.rst文件内容会编译到_build/html目录下。   
-4. ### 配置主题
+### 配置主题
 安装sphinx Read the Docs主题    
-`$ pip install sphinx_rtd_theme`    
+
+    $ pip install sphinx_rtd_theme  
 >更多主题可到官网 https://sphinx-themes.org/ 查看。
 
 配置`source/conf.py` 文件：   
@@ -136,31 +142,38 @@ html_static_path = ['_static']
 ```
 
 重新编译：  
-`$ make html`
+
+    $ make html
 
 ## 本地http预览
-1. ### 安装autobuild工具
-`$ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple sphinx-autobuild`    
+### 安装autobuild工具
+```
+$ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple sphinx-autobuild    
+```
+### 启动本地http页面
+```
+$ sphinx-autobuild source build/html
+```
 
-2. ### 启动本地http页面     
-`$ sphinx-autobuild source build/html`
->在本地浏览器输入127.0.0.1:8000在线预览
+>*在本地浏览器输入127.0.0.1:8000在线预览*
 
 ## 配置markdown(.md)
 >Sphinx默认使用 reStructuredText 标记语言，由于已经习惯使用markdown进行文档编辑，下面来配置markdown。
-1. ### 安装recommonmark插件
-`$ pip install recommonmark`
-
-2. ### 安装支持markdown表格的插件
-`$ pip install sphinx_markdown_tables`
-
+### 安装recommonmark插件
+```
+$ pip install recommonmark
+```
+### 安装支持markdown表格的插件
+```
+$ pip install sphinx_markdown_tables
+```
 >ReadTheDocs的python环境貌似没有sphinx_markdown_tables，在构建时可能报如下错误：
 
     ModuleNotFoundError: No module named 'sphinx_markdown_tables'
 >解决方案是在docs目录下新建一个requirements.txt文件，写入如下内容：
 
     sphinx-markdown-tables==0.0.15
-3. ### 配置source/conf.py 文件
+### 配置source/conf.py 文件
 增加：
 
     extensions = ['recommonmark','sphinx_markdown_tables']
@@ -188,17 +201,80 @@ html_static_path = ['_static']
 
 
 ## 报错
-- ### readthedocs构建问题
-    - conf.py语法错误:  
+### readthedocs构建问题
+- conf.py语法错误:  
     修改项目仓库source/conf.py中错误语法，然后重新推送到gitee。
 
-    - readthedocs找不到‘sphinx_markdown_tables’  扩展。    
+- readthedocs找不到‘sphinx_markdown_tables’  扩展。    
     在readthedocs仓库内创建一个requirements.txt文件，文件内添加缺失的扩展，重新推送到gitee。
 ```
 $ pip show sphinx-rtd-theme    #查看sphinx-rtd-theme版本号，以此类推。
 ```
 >其他缺什么扩展，在requirements.txt 中补上重新推送gitee，然后重新构建即可。
 
+### readthedocs v1迁移v2问题
+> 2023年八月尾，readthedocs v1将不再支持，需要迁移到v2。迁移过程很简单，但是坑很多。
 
+以下是官方给的基础配置文档`.readthedocs.yaml`：
+```
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Set the version of Python and other tools you might need
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.11"
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+
+# We recommend specifying your dependencies to enable reproducible builds:
+# https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
+# python:
+#   install:
+#   - requirements: docs/requirements.txt
+```
+1. `version: 2`，这是v2的配置文件，v1的配置文件是`readthedocs.yml`。
+2. `build.os`，这是构建环境，是指readthedocs构建文档时，使用的操作系统。
+3. `sphinx.configuration`，后面的路径应该是指git仓库存放项目的路径，readthedocs已经知道你的git仓库项目路径了，所以这里只需要从git项目仓库下开始写存放`conf.py`的路径。一般是`source/conf.py`
+4. `python.install`，这个是安装依赖的，依赖的路径是git仓库下存放`requirements.txt`的路径。如果`requirements.txt`没有，则不需要写。路径还是只需要从git项目仓库下存放`requirements.txt`的路径开始写。
+
+我就是在`python.install`这一步卡了半天，明明我的`requirements.txt`文件内有指定，但构建的时候一直报错找不到`recommonmark`模块。因为v1是不需要指定`requirements.txt`的路径的，v2需要指定，把注释去掉，然后把`requirements.txt`的路径写对就好了。
+
+我的配置文件`.readthedocs.yaml`：
+```
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Optionally build your docs in additional formats such as PDF and ePub
+formats: all
+
+# Set the version of Python and other tools you might need
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.11"
+
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: source/conf.py
+
+# We recommend specifying your dependencies to enable reproducible builds:
+# https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
+python:
+  install:
+  - requirements: requirements.txt
+```
 
 
