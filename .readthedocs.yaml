@@ -12,7 +12,7 @@ build:
     python: "3.11"
   commands:
     - pip install recommonmark
-#    - pelican --settings docs/pelicanconf.py --output _readthedocs/html/ docs/
+    - recommonmark --settings docs/pelicanconf.py --output _readthedocs/html/ docs/
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
