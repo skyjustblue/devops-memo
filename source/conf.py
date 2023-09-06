@@ -17,7 +17,7 @@
 project = '运维笔记'
 copyright = '2023, Linyi'
 author = 'Linyi'
-release = 'v.1'
+release = 'v.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
