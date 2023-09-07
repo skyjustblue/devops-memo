@@ -15,6 +15,7 @@ Linux
     硬链接和软链接.md
     find.md
     后缀名.md
+    用户管理.md
     logrotate日志分割.md
     swap.md
 
