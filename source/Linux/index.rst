@@ -16,6 +16,7 @@ Linux
     find.md
     后缀名.md
     用户管理.md
+    sudo.md
     logrotate日志分割.md
     swap.md
 
