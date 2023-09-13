@@ -17,13 +17,15 @@ Linux
     后缀名.md
     用户管理.md
     sudo.md
+    磁盘管理.md
     logrotate日志分割.md
-    swap.md
-
+    
+Shell
+==========
 
 .. toctree::
     :maxdepth: 2
-    :caption: Shell
+    :caption: 基础
 
     历史命令.md
 

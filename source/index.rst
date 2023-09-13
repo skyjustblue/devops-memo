@@ -11,6 +11,7 @@
    :caption: 系统
 
    Linux/index
+   Shell/index
    网络/index
    
 
