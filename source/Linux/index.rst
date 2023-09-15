@@ -18,6 +18,7 @@ Linux
     用户管理.md
     sudo.md
     磁盘管理.md
+    vim.md
     logrotate日志分割.md
     
 Shell
