@@ -19,6 +19,7 @@ Linux
     sudo.md
     磁盘管理.md
     vim.md
+    压缩打包.md
     logrotate日志分割.md
     
 Shell
