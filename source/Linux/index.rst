@@ -20,6 +20,7 @@ Linux
     磁盘管理.md
     vim.md
     压缩打包.md
+    安装卸载工具.md
     logrotate日志分割.md
     
 Shell
