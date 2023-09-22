@@ -23,12 +23,4 @@ Linux
     安装卸载工具.md
     logrotate日志分割.md
     
-Shell
-==========
-
-.. toctree::
-    :maxdepth: 2
-    :caption: 基础
-
-    历史命令.md
 

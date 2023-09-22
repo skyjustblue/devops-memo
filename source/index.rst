@@ -10,9 +10,9 @@
    :maxdepth: 2
    :caption: 系统
 
-   Linux/index
-   Shell/index
-   网络/index
+   系统/Linux/index
+   系统/Shell/index
+   系统/网络/index
    
 
 .. toctree::
