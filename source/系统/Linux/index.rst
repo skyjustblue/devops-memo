@@ -15,7 +15,7 @@ Linux
     硬链接和软链接.md
     find.md
     后缀名.md
-    用户管理.md
+    用户和组管理.md
     sudo.md
     磁盘管理.md
     vim.md
