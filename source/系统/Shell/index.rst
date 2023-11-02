@@ -2,7 +2,7 @@ Shell
 ==========
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 4
     :caption: 基础
 
     Shell基础.md
