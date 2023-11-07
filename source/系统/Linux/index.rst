@@ -9,6 +9,7 @@ Linux
     安装Rocky8.5.md
     重置root密码.md
     远程密钥登陆.md
+    ip修改.md
     umask.md
     chattr和lsattr.md
     set_uid.md
