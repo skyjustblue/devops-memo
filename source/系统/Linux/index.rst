@@ -11,6 +11,7 @@ Linux
     远程密钥登陆.md
     ip修改.md
     Ubuntu默认运行级别.md
+    文件系统目录结构.md
     umask.md
     chattr和lsattr.md
     set_uid.md
@@ -19,11 +20,11 @@ Linux
     硬链接和软链接.md
     find.md
     后缀名.md
+    压缩打包.md
     用户和组管理.md
     sudo.md
     磁盘管理.md
     vim.md
-    压缩打包.md
     安装卸载工具.md
     logrotate日志分割.md
     

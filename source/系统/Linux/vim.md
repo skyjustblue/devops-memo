@@ -1,4 +1,4 @@
-# vim
+# vim - 编辑器
 安装：
 
     $ yum install -y vim-enhanced
