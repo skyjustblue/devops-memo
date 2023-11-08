@@ -21,3 +21,4 @@
     touch /.autorelabel
     ```
 最后一条命令`reboot`没用，需要手动重启服务器后完成。
+
