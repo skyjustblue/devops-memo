@@ -1,4 +1,4 @@
-# chattr和lsattr（隐藏权限）
+# chattr和lsattr - 隐藏权限
 
 ## lsattr
 lsattr：查看文件的第二扩展文件系统属性（隐藏属性）。

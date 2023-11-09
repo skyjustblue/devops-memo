@@ -1,4 +1,4 @@
-# logrotate日志分割
+# logrotate - 日志分割
 > * 分割逻辑：文件大小达到配置文件设置的指定大小后，会将文件改名为“`file.1` `file.2` `file.3` ...”以此类推，并新建一个`file`文件，我们把它叫做“转储”。
 > * logrotate优点在于切割日志的同时，不丢失数据。
 > * 系统自带的日志分割工具，配置文件在`/etc/logrotate.conf`和`/etc/logrotate.d/`目录下。

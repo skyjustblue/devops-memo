@@ -12,6 +12,8 @@ Linux
     ip修改.md
     Ubuntu默认运行级别.md
     文件系统目录结构.md
+    ls.md
+    alias.md
     umask.md
     chattr和lsattr.md
     set_uid.md
