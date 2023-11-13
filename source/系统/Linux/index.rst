@@ -13,7 +13,11 @@ Linux
     Ubuntu默认运行级别.md
     文件系统目录结构.md
     ls.md
+    cd.md
     alias.md
+    文件与目录管理.md
+    chmod权限修改.md
+    chown属主属组修改.md
     umask.md
     chattr和lsattr.md
     set_uid.md
