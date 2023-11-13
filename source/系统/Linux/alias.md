@@ -46,7 +46,6 @@ $ cd /bin
 $ ./vi ~/test.sh
  
 常用。使用反斜线的方法
-$ cd
 $ \vi test.sh
 ```
 
