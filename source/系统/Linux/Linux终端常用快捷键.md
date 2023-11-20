@@ -8,7 +8,7 @@
 <kbd>ctrl</kbd>+<kbd>k</kbd>： 删除光标所在行到行尾  
 <kbd>ctrl</kbd>+<kbd>w</kbd>： 剪切删除光标所在行到行首  
 <kbd>ctrl</kbd>+<kbd>y</kbd>： 粘贴  
-<kbd>ctrl</kbd>+<kbd>t</kbd>： 交换光标所在字符和其前面的字符
+<kbd>ctrl</kbd>+<kbd>t</kbd>： 交换光标所在字符和其前面的字符  
 <kbd>ctrl</kbd>+<kbd>z</kbd>： 暂停当前正在执行的程序，终端执行`fg`命令恢复执行。
 
 

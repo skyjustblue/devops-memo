@@ -205,12 +205,21 @@ $ pip install sphinx_markdown_tables
 - conf.py语法错误:  
     修改项目仓库source/conf.py中错误语法，然后重新推送到gitee。
 
-- readthedocs找不到‘sphinx_markdown_tables’  扩展。    
-    在readthedocs仓库内创建一个requirements.txt文件，文件内添加缺失的扩展，重新推送到gitee。
-```
-$ pip show sphinx-rtd-theme    #查看sphinx-rtd-theme版本号，以此类推。
-```
->其他缺什么扩展，在requirements.txt 中补上重新推送gitee，然后重新构建即可。
+- readthedocs找不到`sphinx_markdown_tables`扩展。    
+    在readthedocs仓库内创建一个`requirements.txt`文件，文件内添加缺失的扩展，重新推送到gitee，以此类推。
+
+> 路径：`E:\read-the-docs\source\requirements.txt`  
+> 文件内容：
+> ```
+> recommonmark
+> sphinx-markdown-tables==0.0.17
+> sphinx-rtd-theme==1.2.2
+> ```
+> 命令查看sphinx_markdown_tables版本号：
+> ```
+> $ pip show sphinx_markdown_tables    
+> ```
+> 其他缺什么扩展，在requirements.txt 中补上重新推送gitee，然后重新构建即可。
 
 ### readthedocs v1迁移v2问题
 > 2023年八月尾，readthedocs v1将不再支持，需要迁移到v2。迁移过程很简单，但是坑很多。
@@ -241,7 +250,7 @@ sphinx:
 #   - requirements: docs/requirements.txt
 ```
 1. `version: 2`，这是v2的配置文件，v1的配置文件是`readthedocs.yml`。
-2. `build.os`，这是构建环境，是指readthedocs构建文档时，使用的操作系统。
+2. `build.os`，这是构建环境，是指readthedocs构建文档时所使用的操作系统，不是写我们的操作系统，默认即可。
 3. `sphinx.configuration`，后面的路径应该是指git仓库存放项目的路径，readthedocs已经知道你的git仓库项目路径了，所以这里只需要从git项目仓库下开始写存放`conf.py`的路径。一般是`source/conf.py`
 4. `python.install`，这个是安装依赖的，依赖的路径是git仓库下存放`requirements.txt`的路径。如果`requirements.txt`没有，则不需要写。路径还是只需要从git项目仓库下存放`requirements.txt`的路径开始写。
 
