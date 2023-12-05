@@ -2,7 +2,7 @@ Linux
 =============
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 3
     :caption: 基础
 
     Linux终端常用快捷键.md
