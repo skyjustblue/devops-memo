@@ -12,7 +12,8 @@
 
    系统/Linux/index
    系统/Shell/index
-   系统/网络/index
+   系统/性能/index
+   系统/防火墙/index
    
 
 .. toctree::

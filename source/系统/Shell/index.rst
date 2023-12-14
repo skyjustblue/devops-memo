@@ -2,8 +2,14 @@ Shell
 ==========
 
 .. toctree::
-    :maxdepth: 4
+    :maxdepth: 2
     :caption: 基础
 
     Shell基础.md
+
+
+.. toctree::
+    :maxdepth: 2
+    :caption: 进阶
+
     正则三剑客.md
