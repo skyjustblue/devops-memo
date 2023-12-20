@@ -134,7 +134,7 @@ $ service iptables save     # 自动把规则保存在/etc/sysconfig/iptables中
 $ iptables-restore < /etc/sysconfig/iptables
 ```
 
-### 规则的查看
+### 规则查看
 ```
 $ iptables -L
 ```
@@ -236,6 +236,11 @@ $ iptables -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT
 > 说明：`ESTABLISHED`表示已经响应请求或者已经建立连接的数据包，“RELATED”表示与已建立的连接有相关性的，比如FTP数据连接等。
 
 ### 删除规则
+
+##### 清除所有规则
+```
+$ iptables -t nat -F
+```
 
 ##### 删除INPUT链的第一条规则
 ```

@@ -20,13 +20,14 @@
    :maxdepth: 2
    :caption: 服务
 
-   Redis/index
+   服务/index
+   
 
 .. toctree::
    :maxdepth: 2
    :caption: 其他
 
-   其他/index
+   其他/工具类/index
 
 
 Indices and tables
