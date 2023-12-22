@@ -14,6 +14,7 @@
    系统/Shell/index
    系统/性能/index
    系统/防火墙/index
+   系统/系统日志/index
    
 
 .. toctree::
