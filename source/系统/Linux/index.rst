@@ -32,6 +32,7 @@ Linux
     磁盘管理.md
     vim.md
     安装卸载工具.md
+    crontab.md
     screen.md
     logrotate日志分割.md
     

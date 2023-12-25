@@ -1,4 +1,6 @@
-# 用法及选项
+# crontab - 计划任务
+
+## 用法及选项
 ```
 crontab [-选项]
             选项：
@@ -8,7 +10,7 @@ crontab [-选项]
                 -r：从/var/spool/cron中删除某个用户的crontab
 ```
 
-# 配置文件
+## 配置文件
 ```
 /etc/crontab
 /var/spool/cron/root
@@ -33,7 +35,7 @@ MAILTO=root
 # *  *  *  *  * user-name  command to be executed
 ```
 
-# 示例
+## 示例
 ```
 # 进入编辑模式
 $ crontab -e
@@ -49,8 +51,6 @@ $ crontab -e
 
 # 每一年1月1号、2号、3号、4号、5号的10:00执行
 0  10  1,2,3,4,5  1  *  sh /data/out_log_file.sh
-
-# 每隔1年1月1号、2号、3号、4号、5号的10:00执行
 ```
 - 分 时 日 月 周  user command
 - 分范围0-59，时范围0-23，日范围1-31，月范围1-12，周1-7
@@ -61,7 +61,7 @@ $ crontab -e
 - 可用格式1,2,3表示1或者2或者3
 - 可用格式*/2表示被2整除的数字，比如小时，那就是每隔2小时
 
-# 启动关闭服务
+## 启动关闭服务
 系统默认开启状态
 ```
 $ systemctl status crond
