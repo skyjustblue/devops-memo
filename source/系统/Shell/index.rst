@@ -30,4 +30,7 @@ Shell
     结构和执行.md
     if.md
     case.md
-    for.md
+    循环.md
+    函数.md
+    
+    
