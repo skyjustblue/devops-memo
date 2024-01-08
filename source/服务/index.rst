@@ -1,4 +1,4 @@
-服务管理
+服务管理命令
 =======================
 
 .. toctree::
@@ -7,6 +7,14 @@
     服务管理/systemd.md
 
 
+rsync
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    rsync/安装及使用.md
+
 
 Redis
 ========================
@@ -14,14 +22,13 @@ Redis
 .. toctree::
     :maxdepth: 2
 
-
     Redis/安装以及问题处理.md
 
-rsync
+
+NFS
 ========================
 
 .. toctree::
     :maxdepth: 2
 
-
-    rsync/安装及使用.md
+    NFS.md

@@ -15,6 +15,7 @@
    系统/性能/index
    系统/防火墙/index
    系统/系统日志/index
+   系统/问题合集/index
    
 
 .. toctree::
