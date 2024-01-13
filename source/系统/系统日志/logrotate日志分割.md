@@ -20,6 +20,7 @@ $ vi test-logsplit
     dateext
     dateformat .%Y-%m-%d
     create 0644 root root
+    sharedscripts
     postrotate
         cat /dev/null > /var/log/test.log
     endscript
@@ -40,6 +41,8 @@ $ vi test-logsplit
 * `dateext`：切割后的日志文件会加上时间后缀
 * `dateformat .%Y-%m-%d`：时间后缀格式
 * `create 0644 root root`：切割后的日志文件权限为0644，所有者root，所有组root
+* `sharedscripts`和`endscript`中间可以引用系统的命令
+* `sharedscripts`：共享脚本，在切割前后的命令
 * `postrotate`：切割后执行的命令
 * `endscript`：命令结束符
 

@@ -34,6 +34,6 @@ Linux
     安装卸载工具.md
     crontab.md
     screen.md
-    logrotate日志分割.md
+    
     
 

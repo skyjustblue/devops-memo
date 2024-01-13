@@ -40,3 +40,13 @@ FTP
 
     FTP.md
 
+Nginx
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    Nginx/安装.md
+    Nginx/配置文件.md
+    Nginx/虚拟主机.md
+    Nginx/日志文件.md
