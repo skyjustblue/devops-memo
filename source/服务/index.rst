@@ -53,3 +53,14 @@ Nginx
     Nginx/https与SSL.md
     Nginx/反向代理.md
     Nginx/负载均衡.md
+
+
+MySQL
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    MySQL/安装.md
+    MySQL/重置密码.md
+    MySQL/mysql常用操作.md
