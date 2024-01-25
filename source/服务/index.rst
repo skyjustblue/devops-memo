@@ -47,24 +47,26 @@ Nginx
     Nginx/负载均衡.md
 
 
-MySQL
+数据库
 ========================
 
 .. toctree::
     :maxdepth: 2
 
-    MySQL/安装.md
-    MySQL/重置密码.md
-    MySQL/mysql常用操作.md
+    数据库/MySQL/安装.md
+    数据库/MySQL/重置密码.md
+    数据库/MySQL/sql常用操作.md
+    数据库/MySQL/配置文件.md
+    数据库/MySQL/主从复制.md
 
 
-PHP
+LNMP
 ========================
 
 .. toctree::
     :maxdepth: 2
 
-    PHP/安装.md
+    LNMP/安装.md
 
 
 Tomcat
