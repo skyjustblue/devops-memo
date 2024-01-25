@@ -16,14 +16,6 @@ rsync
     rsync/安装及使用.md
 
 
-Redis
-========================
-
-.. toctree::
-    :maxdepth: 2
-
-    Redis/安装以及问题处理.md
-
 
 NFS
 ========================
@@ -64,3 +56,34 @@ MySQL
     MySQL/安装.md
     MySQL/重置密码.md
     MySQL/mysql常用操作.md
+
+
+PHP
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    PHP/安装.md
+
+
+Tomcat
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    Tomcat/安装.md
+
+
+Redis
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    Redis/安装.md
+    Redis/使用.md
+    Redis/持久化.md
+    Redis/PHP安装redis扩展.md
+
