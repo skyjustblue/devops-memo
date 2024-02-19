@@ -57,7 +57,10 @@ Nginx
     数据库/MySQL/重置密码.md
     数据库/MySQL/sql常用操作.md
     数据库/MySQL/配置文件.md
-    数据库/MySQL/主从复制.md
+    数据库/MySQL/传统主从.md
+    数据库/MySQL/GTID主从.md
+    数据库/MySQL/MGR组主从.md
+    数据库/MySQL/Cluster高可用.md
 
 
 LNMP
