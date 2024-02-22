@@ -61,6 +61,7 @@ Nginx
     数据库/MySQL/GTID主从.md
     数据库/MySQL/MGR组主从.md
     数据库/MySQL/Cluster高可用.md
+    数据库/MySQL/Xtrabakcup备份.md
 
 
 LNMP
@@ -88,7 +89,10 @@ Redis
     :maxdepth: 2
 
     Redis/安装.md
+    Redis/配置文件.md
     Redis/使用.md
     Redis/持久化.md
+    Redis/主从复制.md
+    Redis/哨兵模式.md
     Redis/PHP安装redis扩展.md
 
