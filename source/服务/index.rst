@@ -94,5 +94,6 @@ Redis
     Redis/持久化.md
     Redis/主从复制.md
     Redis/哨兵模式.md
+    Redis/Cluster模式.md
     Redis/PHP安装redis扩展.md
 
