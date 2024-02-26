@@ -95,5 +95,6 @@ Redis
     Redis/主从复制.md
     Redis/哨兵模式.md
     Redis/Cluster模式.md
+    Redis/数据类型.md
     Redis/PHP安装redis扩展.md
 
