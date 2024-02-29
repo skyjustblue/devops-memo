@@ -5,6 +5,11 @@ netstat命令不仅应用于Linux系统，而且在Windows XP、Windows 7、Wind
 
 ## 语法及选项
 ```
+# netstat在net-tools包中，有些系统需要手动安装
+yum install net-tools -y
+```
+
+```
 netstat [选项]
 
     选项：

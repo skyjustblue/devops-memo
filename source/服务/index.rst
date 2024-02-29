@@ -99,3 +99,18 @@ Redis
     Redis/数据类型.md
     Redis/PHP安装redis扩展.md
 
+消息队列
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    消息队列/消息队列扫盲.md
+    消息队列/kafka介绍.md
+    消息队列/kafka单机版安装.md
+    消息队列/kafka集群部署.md
+
+    消息队列/RabbitMQ介绍.md
+    消息队列/RabbitMQ单机版安装.md
+    消息队列/RabbitMQ集群部署.md
+    
