@@ -47,21 +47,21 @@ Nginx
     Nginx/负载均衡.md
 
 
-数据库
+MySQL
 ========================
 
 .. toctree::
     :maxdepth: 2
 
-    数据库/MySQL/安装.md
-    数据库/MySQL/重置密码.md
-    数据库/MySQL/sql常用操作.md
-    数据库/MySQL/配置文件.md
-    数据库/MySQL/传统主从.md
-    数据库/MySQL/GTID主从.md
-    数据库/MySQL/MGR组主从.md
-    数据库/MySQL/Cluster高可用.md
-    数据库/MySQL/Xtrabakcup备份.md
+    MySQL/安装.md
+    MySQL/重置密码.md
+    MySQL/sql常用操作.md
+    MySQL/配置文件.md
+    MySQL/传统主从.md
+    MySQL/GTID主从.md
+    MySQL/MGR组主从.md
+    MySQL/Cluster高可用.md
+    MySQL/Xtrabakcup备份.md
 
 
 LNMP
@@ -113,4 +113,17 @@ Redis
     消息队列/RabbitMQ介绍.md
     消息队列/RabbitMQ单机版安装.md
     消息队列/RabbitMQ集群部署.md
+
+MongoDB
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    MongoDB/介绍.md
+    MongoDB/单机版安装.md
+    MongoDB/MongoDB shell.md
+    MongoDB/MongoDB副本集.md
+    MongoDB/MongoDB分片集群.md
+    MongoDB/备份和恢复.md
     
