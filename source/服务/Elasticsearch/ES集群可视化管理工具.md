@@ -15,7 +15,7 @@ data.path: "/var/lib/cerebro/cerebro.db"
 systemctl start cerebro
 systemctl enable cerebro
 ```
-浏览器访问：http://192.168.1.152:9000
+浏览器访问：http://192.168.1.152:9000  
 用户名密码：elastic/sWoihyejRhx0*ybrJg8s  
 ![](./8.png)  
 ![](./9.png)  
