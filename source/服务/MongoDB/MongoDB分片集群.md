@@ -59,11 +59,11 @@ sudo hostnamectl set-hostname lwz2
 sudo hostnamectl set-hostname lwz3
 
 # 修改hosts文件，每台加入以下全部内容
-sudo vim /etc/hosts
-
+cat >> /etc/hosts <<EOF
 192.168.1.152   lwz1
 192.168.1.156   lwz2
 192.168.1.136   lwz3
+EOF
 
 # 关闭防火墙和selinux
 sudo systemctl stop firewalld

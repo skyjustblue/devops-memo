@@ -127,3 +127,16 @@ MongoDB
     MongoDB/MongoDB分片集群.md
     MongoDB/备份和恢复.md
     
+Elasticsearch
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    Elasticsearch/ES介绍.md
+    Elasticsearch/ES单机版安装.md
+    Elasticsearch/安装Kibana可视化ES.md
+    Elasticsearch/ES配置文件和常用操作.md
+    Elasticsearch/ES集群部署.md
+    Elasticsearch/ES集群可视化管理工具.md
+    Elasticsearch/ES集群规划.md
