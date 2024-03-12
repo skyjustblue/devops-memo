@@ -40,8 +40,10 @@ Nginx
 
     Nginx/安装.md
     Nginx/配置文件.md
+    Nginx/结构分析.md
     Nginx/虚拟主机.md
     Nginx/日志文件.md
+    Nginx/http与curl.md
     Nginx/https与SSL.md
     Nginx/反向代理.md
     Nginx/负载均衡.md
