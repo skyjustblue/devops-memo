@@ -42,6 +42,7 @@ Nginx
     Nginx/配置文件.md
     Nginx/结构分析.md
     Nginx/虚拟主机.md
+    Nginx/rewrite.md
     Nginx/日志文件.md
     Nginx/http与curl.md
     Nginx/https与SSL.md
@@ -142,3 +143,11 @@ Elasticsearch
     Elasticsearch/ES集群部署.md
     Elasticsearch/ES集群可视化管理工具.md
     Elasticsearch/ES集群规划.md
+
+K8S
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    K8S/单机版安装.md
