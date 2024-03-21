@@ -46,7 +46,7 @@ Nginx
     Nginx/日志文件.md
     Nginx/http与curl.md
     Nginx/https与SSL.md
-    Nginx/反向代理.md
+    Nginx/代理.md
     Nginx/负载均衡.md
 
 
@@ -151,3 +151,5 @@ K8S
     :maxdepth: 2
 
     K8S/单机版安装.md
+    K8S/集群部署.md
+    
