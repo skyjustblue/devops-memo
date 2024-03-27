@@ -48,6 +48,7 @@ Nginx
     Nginx/https与SSL.md
     Nginx/代理.md
     Nginx/负载均衡.md
+    Nginx/访问控制.md
 
 
 MySQL
