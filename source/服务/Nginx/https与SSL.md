@@ -55,7 +55,7 @@ CA证书的作用有很多，只列出常用的几个。
 那么页面就直接打开，否则的话，浏览器会给出一个警告，告诉你该网站的证书存在某某问题，是否继续访问该站点。
 - 验证文件是否可信
 
-### SSL原理
+## SSL原理
 要想弄明白SSL认证原理，首先要对CA有有所了解，它在SSL认证过程中有非常重要的作用。  
 说白了，CA就是一个组织，专门为网络服务器颁发证书的，国际知名的CA机构有VeriSign、Symantec，国内的有GlobalSign。  
 每一家CA都有自己的根证书，用来对它所签发过的服务器端证书进行验证。
@@ -106,8 +106,8 @@ CA证书的作用有很多，只列出常用的几个。
 9. 服务端使用私钥解密，获取对称密钥key
 10. 后续客户端与服务端使用该密钥key进行加密通信
 
-### 自生成CA证书
-#### 生成CA根证书
+## 自生成CA证书
+### 生成CA根证书
 ```bash
 [root@rocky]# cd /etc/pki/
 [root@rocky ca_test]#mkdir ca_test
@@ -146,7 +146,7 @@ subject=C = XX, ST = SC, L = SC, O = rocky, OU = rocky, CN = aming.com, emailAdd
 Getting Private key
 ```
 
-#### 生成server端证书
+### 生成server端证书
 ```bash
 [root@rocky ca_test]# cd /etc/pki/ca_test/server/
 [root@rocky server]# openssl genrsa -out server.key
@@ -209,7 +209,7 @@ Write out database with 1 new entries
 Data Base Updated
 ```
 
-#### 生成客户端证书
+### 生成客户端证书
 ```bash
 [root@rocky ca_test]# cd client/
 [root@rocky client]# openssl genrsa -out client.key
@@ -321,8 +321,8 @@ sudo certbot --nginx
 1. 无重定向
 2. 重定向，访问域名将默认跳转到https
 
-### 配置https
-#### 配置单向SSL
+## 配置SSL
+### 配置单向SSL
 ```
 server {
     listen       443 ssl;
@@ -337,7 +337,7 @@ server {
     ssl_prefer_server_ciphers on;
 }
 ```
-#### 配置双向SSL
+### 配置双向SSL
 ```bash
 server
 {
@@ -355,7 +355,7 @@ server
     ssl_verify_client on;
 }
 ```
-#### 配置解析
+### 配置解析
 - `443 ssl`：监听443端口，使用ssl协议
 - `ssl_certificate`：证书文件路径
 - `ssl_certificate_key`：私钥文件路径
