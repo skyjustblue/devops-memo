@@ -46,10 +46,12 @@ Nginx
     Nginx/日志文件.md
     Nginx/http与curl.md
     Nginx/https与SSL.md
-    Nginx/代理.md
+    Nginx/Nginx支持HTTP2.md
+    Nginx/正、反向代理和四层代理.md
     Nginx/负载均衡.md
     Nginx/访问控制.md
     Nginx/用户认证.md
+    Nginx/调优和监控.md
 
 
 MySQL
@@ -154,4 +156,6 @@ K8S
 
     K8S/单机版安装.md
     K8S/集群部署.md
+    K8S/yaml文件.md
+    K8S/API对象.md
     

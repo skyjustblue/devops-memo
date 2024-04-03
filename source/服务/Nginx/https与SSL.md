@@ -285,9 +285,9 @@ Data Base Updated
 ### 安装snap
 (Centos、Rocky通用)
 ```bash
-sudo yum install epel-release
-sudo yum upgrade
-sudo yum install snapd
+sudo yum install epel-release -y
+sudo yum upgrade -y
+sudo yum install snapd -y
 
 sudo systemctl enable --now snapd.socket
 sudo ln -s /var/lib/snapd/snap /snap
