@@ -148,6 +148,17 @@ Elasticsearch
     Elasticsearch/ES集群可视化管理工具.md
     Elasticsearch/ES集群规划.md
 
+集群
+========================
+
+.. toctree::
+    :maxdepth: 2
+
+    集群/集群介绍.md
+    集群/keepalived.md
+    集群/LVS.md
+    集群/haproxy.md
+
 K8S
 ========================
 
