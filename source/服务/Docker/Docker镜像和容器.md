@@ -111,3 +111,7 @@ docker save会保留镜像所有的历史记录，docker export不会，即没�
 docker load用来载入镜像包，docker import用来载入容器包，但两者都会恢复为镜像；
 docker load不能对载入的镜像重命名，而docker import可以为镜像指定新名称。
 ```
+```bash
+# 查看容器ip地址（d4f8010cb4d0 为容器ID）
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' d4f8010cb4d0
+```

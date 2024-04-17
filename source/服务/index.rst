@@ -170,6 +170,9 @@ Docker
     Docker/Docker镜像和容器.md
     Docker/Docker数据持久化.md
     Docker/Docker网络.md
+    Docker/Dockerfile编写.md
+    Docker/Docker-compose.md
+    Docker/私有镜像管理仓库harbor.md
 
 K8S
 ========================

@@ -25,3 +25,19 @@ Docker服务启动时会生成一个docker0的网卡，这个网卡是实现容�
     # 查看
     docker exec -it linyi05 bash -c ip addr
     ```
+
++ bridge模式  
+也就是默认模式，可以--net=bridge  也可以不指定--net，默认就是bridge
+
+## 端口映射  
+    ```bash
+    docker run -itd -v /data/:/var/www/html/ -p 8088:80 --name aming06 ubuntu_test bash
+    ```
+    说明： -p后面跟 宿主机监听端口:容器监听端口
+
+
+## 查看容器ip
+```bash
+# 查看容器ip地址（d4f8010cb4d0 为容器ID）
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' d4f8010cb4d0
+```
