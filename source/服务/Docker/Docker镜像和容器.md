@@ -81,6 +81,8 @@ docker exec -it ubuntu bash
 ##在容器中可正常安装软件
 apt update
 apt install -y nginx
+##在容器中查看系统版本
+cat /etc/os-release
 
 # 将容器重新打包成新镜像
 [root@lwz1 ~]# docker commit -m "test nginx" -a "linyi" lwznginx nginx_debian:1.0
