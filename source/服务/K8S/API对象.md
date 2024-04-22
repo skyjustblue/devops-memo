@@ -662,7 +662,7 @@ Pod想要使用具体的存储资源需要对接到pvc，pvc里会定义好pod�
 pv可以手动创建，也可以自动创建，当pv需求量非常大时，如果靠手动创建pv就非常麻烦了，sc可以实现自动创建pv，并且会将pvc和pv绑定。  
 sc对象会定义两部分内容：①pv的属性，比如存储类型、大小；②创建该pv需要用到的存储插件（provisioner），这个provisioner是实现自动创建pv的关键。
 
-### 案例一（pv手动创建）：
+### 案例一（pv手动创建）
 
 PV YAML示例：
 ```yaml
@@ -715,3 +715,501 @@ kubectl get pv,pvc
 ```
 实验： 
 将testpvc的期望100Mi改为1000Mi，查看pv的STATUS
+
+### 案例二（pv通过sc自动创建）
+为了更加贴近生产环境，需要先创建一个NFS服务器，然后通过NFS来演示sc的用法。
+
+额外开一台虚拟机，搭建NFS服务（具体步骤略），假设NFS服务器IP地址为192.168.222.99，共享目录为/data/nfs
+
+另外，要想使用NFS的sc，还需要安装一个NFS provisioner，它的作用是自动创建NFS的pv
+github地址： https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner  
+
+```bash
+# 将源码下载下来
+git clone https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
+
+cd nfs-subdir-external-provisioner/deploy
+
+# 修改命名空间为kube-system
+sed -i 's/namespace: default/namespace: kube-system/' rbac.yaml
+
+# 创建rbac授权
+kubectl apply -f rbac.yaml
+```
+```bash
+# 修改命名空间为kube-system
+sed -i 's/namespace: default/namespace: kube-system/' deployment.yaml
+
+# 编辑deployment.yaml
+vim deployment.yaml
+
+   spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: chronolaw/nfs-subdir-external-provisioner:v4.0.2  ##改为dockerhub地址
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: k8s-sigs.io/nfs-subdir-external-provisioner
+            - name: NFS_SERVER
+              value: 192.168.222.99  ##nfs服务器地址
+            - name: NFS_PATH
+              value: /data/nfs  ##nfs共享目录
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 192.168.222.99  ##nfs服务器地址
+            path: /data/nfs  ##nfs共享目录
+```
+```bash
+# 应用yaml
+kubectl apply -f deployment.yaml 
+
+# 创建storageclass
+kubectl apply -f class.yaml
+```
+
+### SC YAML示例
+```yaml
+cat class.yaml
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-client
+provisioner: k8s-sigs.io/nfs-subdir-external-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME'
+parameters:
+  archiveOnDelete: "false"  ##自动回收存储空间
+```
+有了SC，还需要一个PVC
+
+### PVC
+```yaml
+vim nfs-pvc.yaml
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteMany
+
+  resources:
+    requests:
+      storage: 500Mi
+```
+
+
+下面创建一个pod，来使用pvc：
+```yaml
+vim nfs-pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nfs-pod
+spec:
+  containers:
+  - name: nfs-pod
+    image: nginx:1.23.2
+    volumeMounts:
+    - name: nfspv
+      mountPath: "/usr/share/nginx/html"
+  volumes:
+  - name: nfspv
+    persistentVolumeClaim:
+      claimName: nfs-pvc
+```
+
+**总结：**  
+pod想使用共享存储 ---> PVC (定义具体需求属性） --->SC （定义Provisioner）---> Provisioner（定义具体的访问存储方法） ---> NFS-server  --->  自动创建PV
+
+## API资源对象Statefulset
+Pod的有状态和无状态：  
+- 无状态：指的Pod运行期间不会产生重要数据，即使有数据产生，这些数据丢失了也不影响整个应用。比如Nginx、Tomcat等应用属于无状态。
+- 有状态：指的是Pod运行期间会产生重要的数据，这些数据必须要做持久化，比如MySQL、Redis、RabbitMQ等。
+
+Deployment和Daemonset适合做无状态，而有状态也有一个对应的资源，那就是Statefulset（简称sts）。
+
+### Sts示例
+```yaml
+vim redis-sts.yaml
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-sts
+
+spec:
+  serviceName: redis-svc ##这里要有一个serviceName，Sts必须和serice关联
+
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-pvc
+    spec:
+      storageClassName: nfs-client
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 500Mi
+
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis-sts
+
+  template:
+    metadata:
+      labels:
+        app: redis-sts
+    spec:
+      containers:
+      - image: redis:6.2
+        name: redis
+        ports:
+        - containerPort: 6379
+
+        volumeMounts:
+        - name: redis-pvc
+          mountPath: /data
+```
+```yaml
+vim redis-svc.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-svc
+
+spec:
+  selector:
+    app: redis-sts
+
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+```
+
+```bash
+# 应用两个YAML文件
+kubectl apply -f redis-sts.yaml -f redis-svc.yaml
+```
+对于Sts的Pod，有如下特点：
+- Pod名固定有序，后缀从0开始；
+- “域名”固定，这个“域名”组成： Pod名.Svc名，例如 redis-sts-0.redis-svc；
+- 每个Pod对应的PVC也是固定的；
+
+**实验：**  
+```bash
+# ping 域名
+kubectl exec -it redis-sts-0 -- bash
+## 进去可以ping redis-sts-0.redis-svc 和  redis-sts-1.redis-svc
+```
+```bash
+# 创建key
+kubectl exec -it redis-sts-0 -- redis-cli
+
+127.0.0.1:6379> set k1 'abc'
+OK
+127.0.0.1:6379> set k2 'bcd'
+OK
+```
+```bash
+# 模拟故障
+kubectl delete pod redis-sts-0
+
+## 删除后，它会自动重新创建同名Pod，再次进入查看redis key
+kubectl exec -it redis-sts-0 -- redis-cli
+
+127.0.0.1:6379> get k1
+"abc"
+127.0.0.1:6379> get k2
+"bcd"
+### 数据依然存在
+```
+
+## API资源对象Endpoint
+Endpoint（简称ep）资源是和Service一一对应的，也就是说每一个Service都会对应一个Endpoint。
+```bash
+# 查看ep
+kubectl get ep
+NAME         ENDPOINTS                           AGE
+kubernetes   192.168.222.131:6443                3d5h
+ngx-svc      10.18.235.159:80,10.18.236.173:80   21h
+
+# 查看service
+kubectl get svc
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.15.0.1      <none>        443/TCP   3d5h
+ngx-svc      ClusterIP   10.15.41.113   <none>        80/TCP    21h
+```
+Endpoint可以理解成Service后端对应的资源。
+
+**有时候K8s里的Pod需要访问外部资源，比如访问外部的MySQL服务，就可以定义一个对外资源的Ednpoint，然后再定义一个Service，就可以让K8s里面的其它Pod访问了。**
+```yaml
+vim testep.yaml
+
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: external-mysql
+subsets:
+  - addresses:
+    - ip: 192.168.222.99
+    ports:
+      - port: 3306
+
+-----------------
+apiVersion: v1
+kind: Service  ##注意，该service里并不需要定义selector，只要Service name和Endpoint name保持一致即可
+metadata:
+  name: external-mysql
+spec:
+  ports:
+    - port: 3306
+```
+```bash
+# 应用
+kubectl apply -f testep.yaml
+
+# 查看
+kubectl get ep
+kubectl get svc
+```
+安装mariadb包（需要mysql命令），然后命令行连接Service external-mysql对应的Cluster IP测试
+
+## API资源对象NetworkPolicy
+NetworkPolicy用来控制Pod与Pod之间的网络通信，它也支持针对Namespace进行限制。基于白名单模式，符合规则的对象通过，不符合的拒绝。  
+
+应用场景举例：
+- Pod A不能访问Pod B；
+- 开发环境所有Pod不能访问测试命名空间；
+- 提供对外访问时，限制外部IP；
+
+```yaml
+# 官方NetworkPolicy YAML示例：
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 172.17.0.0/16
+            except:
+              - 172.17.1.0/24
+        - namespaceSelector:
+            matchLabels:
+              project: myproject
+        - podSelector:
+            matchLabels:
+              role: frontend
+      ports:
+        - protocol: TCP
+          port: 6379
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/24
+      ports:
+        - protocol: TCP
+          port: 5978
+```
+说明：
+- 必需字段：apiVersion、 kind 和 metadata 字段。
+- podSelector：定义目标Pod的匹配标签，即哪些Pod会生效此策略；
+- policyTypes：表示给定的策略是应用于目标Pod的入站流量（Ingress）还是出站流量（Egress），或两者兼有。 如果NetworkPolicy未指定policyTypes则默认情况下始终设置Ingress。
+- ingress：定义入流量限制规则，from用来定义白名单对象，比如网段、命名空间、Pod标签，Ports定义目标端口。
+- egress：定义出流量限制规则，定义可以访问哪些IP和端口
+
+### 案例一
+**需求：**  
+aming命名空间下所有Pod可以互相访问，也可以访问其他命名空间Pod，但其他命名空间不能访问aming命名空间Pod。
+
+首先创建几个Pod：
+```bash
+# default命名空间里创建busybox Pod
+kubectl run busybox --image=busybox -- sleep 3600
+
+# aming命名空间里创建busybox Pod
+kubectl run busybox --image=busybox -n aming -- sleep 3600
+
+# aming命名空间里创建web pod
+kubectl run web --image=nginx:1.23.2 -n aming
+```
+在没有创建NetworkPolicy的情况下测试
+```bash
+# aming命名空间的busybox ping default命名空间的busybox IP 
+kubectl exec busybox -n aming -- ping 10.18.235.161
+
+# aming命名空间的busybox ping aming命名空间的web IP
+kubectl exec busybox -n aming -- ping 10.18.235.162
+
+# default命名空间的busybox ping aming命名空间的web IP
+kubectl exec busybox -- ping 10.18.235.162
+```
+创建networkpolicy的YAML
+```yaml
+vim deny-all-namespaces.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all-namespaces
+  namespace: aming
+spec:
+  podSelector: {} # 为空，表示匹配本命名空间所有Pod
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector: {} # 为空，表示匹配该命名空间所有Pod，即允许该命名空间所有Pod访问，没有定义namespaceSelector，也就是说不允许其它namespace的Pod访问。
+```
+应用YAML
+```bash
+kubectl apply -f deny-all-namespaces.yaml
+```
+测试
+```bash
+# aming命名空间的busybox ping default命名空间的busybox IP
+kubectl exec busybox -n aming -- ping 10.18.235.161
+
+# aming命名空间的busybox ping aming命名空间的web IP
+kubectl exec busybox -n aming -- ping 10.18.235.162
+
+# default命名空间的busybox ping aming命名空间的web IP
+kubectl exec busybox -- ping 10.18.235.162
+
+
+# 将刚刚创建的所有资源删除
+kubectl delete po busybox  --force
+kubectl delete po busybox -n aming --force
+kubectl delete po web -n aming
+kubectl delete -f deny-all-namespaces.yaml
+```
+
+### 案例二
+通过PodSelector限制
+
+```yaml
+vim pod-selector.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: app-to-app
+  namespace: aming
+spec:
+  podSelector:
+    matchLabels:
+      app: test
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: dev
+      ports:
+        - protocol: TCP
+          port: 80
+```
+```bash
+# 应用YAML
+kubectl apply -f pod-selector.yaml
+```
+```bash
+# 创建测试pod
+
+# 创建Pod时，指定label
+kubectl run web01 --image=nginx:1.23.2 -n aming -l 'app=test'  
+# 查看label
+kubectl get pod web01 -n aming --show-labels 
+## 如果label创建错了，也可以修改，在本实验中不需要做如下操作
+### kubectl label pod busybox app=test123 --overwrite 
+
+kubectl run app01 --image=nginx:1.23.2 -n aming -l 'app=dev' 
+kubectl run app02 --image=nginx:1.23.2 -n aming  
+```
+```bash
+# 查看web01的IP
+kubectl describe po web01 -n aming |grep -i ip
+
+# 测试
+kubectl exec -n aming app01 -- curl 10.18.235.170
+kubectl exec -n aming app02 -- curl 10.18.235.170
+
+# 测试成功后，删除掉刚刚创建的资源
+kubectl delete po app01 -n aming
+kubectl delete po app02 -n aming
+kubectl delete po web01 -n aming
+kubectl delete -f pod-selector.yaml
+```
+
+### 案例三
+限制namespace
+```yaml
+vi allow-ns.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ns
+  namespace: aming
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: test
+      ports:
+        - protocol: TCP
+          port: 80
+```
+```bash
+# 应用YAML
+kubectl apply -f allow-ns.yaml
+```
+```bash
+# 创建测试ns 
+kubectl create ns test
+
+# 创建测试pod
+kubectl run web01 --image=nginx:1.23.2 -n aming
+kubectl run web02 --image=nginx:1.23.2 -n test
+kubectl run web03 --image=nginx:1.23.2 
+kubectl run web04 --image=nginx:1.23.2 -n aming
+
+# 查看web01的IP
+kubectl describe po web01 -n aming |grep -i ip
+
+# 查看ns label
+kubectl get ns --show-labels
+
+# 给ns设置标签
+kubectl label namespace test name=test
+
+# 测试：
+kubectl -n test exec web02 -- curl 10.18.235.172  #可以访问
+kubectl exec web03 -- curl 10.18.235.172 #不可以访问
+kubectl -n aming exec web04 -- curl 10.18.235.172  #不可以访问，即使同一个命名空间也无法访问
+```

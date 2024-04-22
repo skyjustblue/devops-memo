@@ -42,8 +42,11 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 # 更新APT软件包索引
 sudo apt-get update
 
+# 查看可安装的docker版本
+apt-cache madison docker-ce
+
 # 安装特定版本的Docker20.10.0
-sudo apt-get install docker-ce=5:20.10.0~3-0~ubuntu-focal docker-ce-cli=5:20.10.0~3-0~ubuntu-focal containerd.io
+sudo apt-get -y install docker-ce=5:20.10.0~3-0~ubuntu-focal docker-ce-cli=5:20.10.0~3-0~ubuntu-focal containerd.io
 
 # 查看版本
 sudo docker --version
