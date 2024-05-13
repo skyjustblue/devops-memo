@@ -184,4 +184,6 @@ K8S
     K8S/集群部署.md
     K8S/yaml文件.md
     K8S/API对象.md
-    
+    K8S/水平自动扩容和缩容HPA.md
+    K8S/用户安全控制.md
+    K8S/网络.md

@@ -17,7 +17,7 @@ kubectl run pod-demo --image=busybox
 kubectl describe pod pod-demo
 
 # 从已知Pod导出YAML文件
-kubectl get pod pod-demo -o yaml  -o yaml > pod-demo.yaml
+kubectl get pod pod-demo -o yaml > pod-demo.yaml
 ```
 ### pod yaml示例
 四个核心部分：apiVersion、Kind、metadata、spec  
@@ -66,6 +66,151 @@ kubectl delete pod ngx-pod
 
 # 删除namespace
 kubectl delete namespace linyi
+```
+
+## Pod原理和生命周期
+### Pod原理
+Pod 是在K8s集群中运行部署应用或服务的最小单元。
+
+在同一个Pod中其实可以同时运行多个容器，这些容器能够共享网络、存储以及 CPU/内存等资源。
+
+每个Pod都有一个特殊的被称为 “根容器” 的Pause容器。Pause容器的主要作用是为Pod中的其他容器提供一些基本的功能，比如网络和PID命名空间的共享、 负责管理Pod内其他容器的生命周期。
+- 网络命名空间共享：pause容器为整个Pod创建一个网络命名空间，Pod内的其他容器都将加入这个网络命名空间。这样，Pod中的所有容器都可以共享同一个IP地址和端口空间，从而实现容器间的紧密通信。
+- PID命名空间共享：pause容器充当Pod内其他容器的父容器，它们共享同一个PID命名空间。这使得Pod内的容器可以通过进程ID直接发现和相互通信，同时也使得Pod具有一个统一的生命周期。
+- 生命周期管理：pause容器作为Pod中其他容器的父容器，负责协调和管理它们的生命周期。当pause容器启动时，它会成为Pod中其他容器的根容器。当pause容器终止时，所有其他容器也会被自动终止，确保了整个Pod的生命周期的一致性。
+- 保持Pod状态：pause容器保持运行状态，即使Pod中的其他容器暂时停止或崩溃，也可以确保Pod保持活跃。这有助于Kubernetes更准确地监视和管理Pod的状态。
+
+### Pod生命周期（运行状态）
+Pod生命周期包括以下几个阶段：
+- **Pending**：在此阶段，Pod已被创建，但尚未调度到运行节点上。此时，Pod可能还在等待被调度，或者因为某些限制（如资源不足）而无法立即调度。
+- **Running**：在此阶段，Pod已被调度到一个节点，并创建了所有的容器。至少有一个容器正在运行，或者正在启动或重启。
+- **Succeeded**：在此阶段，Pod中的所有容器都已成功终止，并且不会再次重启。
+- **Failed**：在此阶段，Pod中的至少一个容器已经失败（退出码非零）。这意味着容器已经崩溃或以其他方式出错。
+- **Unknown**：在此阶段，Pod的状态无法由Kubernetes确定。这通常是因为与Pod所在节点的通信出现问题。
+
+除了这些基本的生命周期阶段之外，还有一些更详细的容器状态，用于描述容器在Pod生命周期中的不同阶段：
+- **ContainerCreating**：容器正在创建，但尚未启动。
+- **Terminating**：容器正在终止，但尚未完成。
+- **Terminated**：容器已终止。
+- **Waiting**：容器处于等待状态，可能是因为它正在等待其他容器启动，或者因为它正在等待资源可用。
+- **Completed**：有一种Pod是一次性的，不需要一直运行，只要执行完就会是此状态。
+
+### 创建Pod流程
+![](./6.png)  
+1. 用户通过kubectl或其他API客户端提交Pod对象给API server。
+2. API server尝试将Pod对象的相关信息存入etcd中，写入操作完成后API server会返回确认信息至客户端。
+3. API server开始反映etcd中的状态变化。
+4. 所有的Kubernetes组件均使用watch机制来跟踪检查API server上的相关变化。
+5. Kube-scheduler通过其watcher观察到API server创建了新的Pod对象但尚未绑定至任何节点。
+6. Kube-scheduler为Pod对象挑选一个工作节点并将结果更新至API server。
+7. 调度结果由API server更新至etcd，而且API server也开始反映此Pod对象的调度结果。
+8. Pod 被调度的目标工作节点上的kubelet尝试在当前节点上调用Containerd启动容器，并将容器的结果状态返回至API server。
+9. API server将Pod 状态信息存入etcd。
+10. 在etcd确认写操作完成后，API server将确认信息发送至相关的kubelet。
+
+### 删除Pod流程
+![](7.png)  
+1. 请求删除Pod。
+2. API server将Pod标记为Terminating状态。
+3. （与第 2 步同时进行）kubelet在监控到Pod对象转为Terminating状态的同时启动Pod关闭过程。
+4. （与第 2 步同时进行）Service将Endpoint摘除。
+5. 如果当前Pod对象定义了preStop hook，则在其标记为Terminating后会以同步的方式执行，宽限期开始计时。
+6. Pod中的容器进程收到TERM信号。
+7. 宽限期结束后，若进程仍在运行，会收到SIGKILL信号。
+8. kubelet请求API server将此Pod对象的宽限期设置为0，从而完成删除操作。
+
+## Pod资源限制
+### Resource Quota
+资源配额Resource Quotas（简称quota）是对namespace进行资源配额，限制资源使用的一种策略。 
+
+K8S是一个多用户架构，当多用户或者团队共享一个K8S系统时，SA使用quota防止用户（基于namespace的）的资源抢占，定义好资源分配策略。
+
+Quota应用在Namespace上，默认情况下，没有Resource Quota的，需要另外创建Quota，并且每个Namespace最多只能有一个Quota对象。
+
+可限定资源类型：  
+- 计算资源：limits.cpu、requests.cpu、limits.memory、requests.memory  
+- 存储资源，包括存储资源的总量以及指定storage class的总量  
+  - requests.storage：存储资源总量，如500Gi  
+  - persistentvolumeclaims：pvc的个数
+
+对象数，即可创建的对象的个数  
+- pods, replicationcontrollers, configmaps, secrets，persistentvolumeclaims，services, services.loadbalancers,services.nodeports
+
+**注意**：  
+Quota依赖于资源管理器，可以使用资源对象limits或者在创建资源对象时为pod设置资源限制（resources），如果不设置，资源对象无法创建。  
+当该namespace中的任意个额度达到预设Quota时，将无法创建资源对象。
+
+Resource Quota示例：
+```bash
+cat > quota.yaml <<EOF
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  namespace: linyi
+  name: linyi-quota
+
+spec:
+  hard:
+    pods: 50  ## 该命名空间里最多支持启动50个Pods
+    requests.cpu: 0.5 ##最低保证0.5个CPU资源
+    requests.memory: 512Mi ##最低保证512M内存
+    limits.cpu: 5  ##最多使用5核CPU
+    limits.memory: 16Gi ##最多使用16G内存
+    configmaps: 20 ##最多支持20个configMaps
+    persistentvolumeclaims: 20 ##最多支持20个pvc
+    replicationcontrollers: 20 ##最多支持20个replicationControllers
+    secrets: 20 ##最多支持20个secrets
+    services: 50 ##最多支持50个services
+EOF
+
+# 生效
+kubectl apply -f quota.yaml
+
+# 查看
+kubectl get quota -n linyi
+```
+测试：  
+（为了显示限额效果，修改quota.yaml，将pod限制数改为5，其它先删除掉）
+```bash
+# 命令行创建deployment，指定Pod副本为7
+kubectl create deployment testdp --image=nginx:1.23.2 -n linyi --replicas=7
+
+# 查看deployment和pod
+kubectl get deploy,po -n linyi
+
+# 删除deployment
+kubectl delete deploy testdp -n linyi
+```
+
+### Pod的limits和requests
+Resource Quota是针对namespace下面所有的Pod的限制，而Pod自身也有限制。  
+
+示例：
+```yaml
+cat > quota-pod.yaml <<EOF
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quota-pod
+  namespace: linyi
+
+spec:
+  containers:
+  - image: nginx:1.23.2
+    name: ngx
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 80
+    resources:
+      limits:
+        cpu: 0.5  ##限制Pod CPU资源最多使用500m，这里的0.5=500m，1=1000m
+        memory: 2Gi ##限制内存资源最多使用2G
+      requests:
+        cpu: 200m  ##K8s要保证Pod使用的最小cpu资源为200m，如果node上资源满足不了，则不会调度到该node上
+        memory: 512Mi ##K8s要保证Pod使用最小内存为512M，如果node上资源满足不了，则不会调度到该node上
+EOF
 ```
 
 ## 资源对象：Job
@@ -352,6 +497,9 @@ kubectl describe deploy ng-deploy
 # 查看pod
 kubectl get pod
 
+# 查看pod分配到哪个节点上
+kubectl get po -o wide
+
 # 删除deploy
 kubectl delete deploy ng-deploy
 ```
@@ -388,6 +536,47 @@ kubectl describe svc ngx-svc
 
 # 删除service
 kubectl delete svc ngx-svc
+```
+
+### 三种Service 类型
+#### ClusterIP
+该方式为默认类型，即，不定义type字段时（如上面service的示例），就是该类型。
+```yaml
+spec:
+  selector:
+    app: myng
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 8080  ##service的port
+    targetPort: 80  ##pod的port
+```
+
+#### NodePort
+如果想直接通过k8s节点的IP直接访问到service对应的资源，可以使用NodePort，Nodeport对应的端口范围:30000-32767
+```yaml
+spec:
+  selector:
+    app: myng
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 8080  ##service的port
+    targetPort: 80  ##pod的port
+    nodePort: 30009  ##可以自定义，也可以不定义，它会自动获取一个端口
+```
+
+#### LoadBlancer
+这种方式，需要配合公有云资源比如阿里云、亚马逊云来实现，这里需要一个公网IP作为入口，然后来负载均衡所有的Pod。
+```yaml
+spec:
+  selector:
+    app: myng
+  type: LoadBlancer
+  ports:
+  - protocol: TCP
+    port: 8080  ##service的port
+    targetPort: 80  ##pod的port
 ```
 
 ## 资源对象：Daemonset
@@ -837,6 +1026,74 @@ Pod的有状态和无状态：
 
 Deployment和Daemonset适合做无状态，而有状态也有一个对应的资源，那就是Statefulset（简称sts）。
 
+### 搭建NFS服务用于实验
+额外开一台虚拟机，搭建NFS服务（具体步骤略）  
+假设NFS服务器IP地址为192.168.222.128，共享目录为/data/nfs  
+```bash
+# 在k8s节点中执行如下命令查看是否能够正常连接nfs，正常后再做后面的操作
+showmount -e 192.168.222.128
+## showmount工具在nfs-utils软件包中
+yum install -y nfs-utils
+```
+
+另外，要想使用NFS的sc，还需要安装一个NFS provisioner，它的作用是自动创建NFS的pv  
+github地址： https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
+```bash
+# 下载源码
+git clone https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
+
+cd nfs-subdir-external-provisioner/deploy
+
+#修改命名空间为kube-system
+sed -i 's/namespace: default/namespace: kube-system/' rbac.yaml
+
+# 创建rbac授权
+kubectl apply -f rbac.yaml
+
+# 修改deployment.yaml
+sed -i 's/namespace: default/namespace: kube-system/' deployment.yaml ##修改命名空间为kube-system
+
+  ##你需要修改标红的部分 
+   spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: chronolaw/nfs-subdir-external-provisioner:v4.0.2  ##改为dockerhub地址
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: k8s-sigs.io/nfs-subdir-external-provisioner
+            - name: NFS_SERVER
+              value: 192.168.222.128  ##nfs服务器地址
+            - name: NFS_PATH
+              value: /data/nfs  ##nfs共享目录
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 192.168.222.128  ##nfs服务器地址
+            path: /data/nfs  ##nfs共享目录
+
+
+# 应用yaml
+kubectl apply -f deployment.yaml 
+# 创建storageclass
+kubectl apply -f class.yaml
+```
+SC YAML示例
+```yaml
+cat class.yaml
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-client
+provisioner: k8s-sigs.io/nfs-subdir-external-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME'
+parameters:
+  archiveOnDelete: "false"  ##自动回收存储空间
+```
+
 ### Sts示例
 ```yaml
 vim redis-sts.yaml
@@ -935,9 +1192,13 @@ kubectl exec -it redis-sts-0 -- redis-cli
 "bcd"
 ### 数据依然存在
 ```
+关于Sts里的多个Pod之间的数据同步  
+K8s并不负责Sts里的Pod间数据同步， 具体的数据同步和一致性策略取决于我们部署的有状态应用程序。不同的应用程序可能使用不同的数据同步和一致性策略。例如，关系型数据库（如 MySQL）可能使用主-从复制，而分布式数据库（如 MongoDB）可能使用一种基于分区和副本的数据同步机制。
+
 
 ## API资源对象Endpoint
-Endpoint（简称ep）资源是和Service一一对应的，也就是说每一个Service都会对应一个Endpoint。
+Endpoint（简称ep）资源是和Service一一对应的，也就是说每一个Service都会对应一个Endpoint。  
+Endpoint可以理解为将外部（不在当前k8s内）的服务加入到k8s内，方便k8s内部的服务访问。
 ```bash
 # 查看ep
 kubectl get ep
