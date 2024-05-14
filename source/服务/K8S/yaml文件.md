@@ -48,6 +48,6 @@ Kubernetes:
     - container-runtime: [docker, containerd, cri-o]
 ```
 用一张图来总结YAML  
-![](./1.png)
+![](./png/1.png)
 
 

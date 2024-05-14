@@ -96,7 +96,7 @@ Pod生命周期包括以下几个阶段：
 - **Completed**：有一种Pod是一次性的，不需要一直运行，只要执行完就会是此状态。
 
 ### 创建Pod流程
-![](./6.png)  
+![](./png/6.png)  
 1. 用户通过kubectl或其他API客户端提交Pod对象给API server。
 2. API server尝试将Pod对象的相关信息存入etcd中，写入操作完成后API server会返回确认信息至客户端。
 3. API server开始反映etcd中的状态变化。
@@ -109,7 +109,7 @@ Pod生命周期包括以下几个阶段：
 10. 在etcd确认写操作完成后，API server将确认信息发送至相关的kubelet。
 
 ### 删除Pod流程
-![](7.png)  
+![](./png/7.png)  
 1. 请求删除Pod。
 2. API server将Pod标记为Terminating状态。
 3. （与第 2 步同时进行）kubelet在监控到Pod对象转为Terminating状态的同时启动Pod关闭过程。
@@ -454,6 +454,25 @@ kubectl exec -it testpod2 -- sh
 ```
 
 ## 资源对象：Deployment
+Deployment是K8s集群中的一种资源对象，它表示一组Pod副本的集合，这些Pod副本的定义完全一致。可以理解为批量创建pod的副本集，以及能够定义Pod的启动策略。
+
+Deployment的定义文件通常包含以下几个部分：
+- apiVersion：指定API版本，例如apps/v1
+- kind：指定资源类型，例如Deployment
+- metadata：指定资源的元数据
+- spec：指定部署的详细定义
+  - replicas：指定副本数量，默认为1
+  - selector：指定Pod标签选择器
+  - template：指定Pod模板
+    - metadata：指定Pod的元数据
+    - spec：指定Pod的详细定义
+      - containers：指定Pod的容器列表
+        - name：指定容器的名称
+        - image：指定容器的镜像
+        - ports：指定容器的端口列表
+          - name：指定端口的名称
+          - containerPort：指定容器要监听的端口号
+
 示例
 ```yaml
 vim ng-deploy.yaml
@@ -482,7 +501,7 @@ spec:
             containerPort: 80
 ```
 matchLabels和labels之间的关系：  
-![](2.png)  
+![](./png/2.png)  
 
 ```bash
 # 使用YAML创建deploy
@@ -566,13 +585,13 @@ spec:
     nodePort: 30009  ##可以自定义，也可以不定义，它会自动获取一个端口
 ```
 
-#### LoadBlancer
+#### LoadBalancer
 这种方式，需要配合公有云资源比如阿里云、亚马逊云来实现，这里需要一个公网IP作为入口，然后来负载均衡所有的Pod。
 ```yaml
 spec:
   selector:
     app: myng
-  type: LoadBlancer
+  type: LoadBalancer
   ports:
   - protocol: TCP
     port: 8080  ##service的port
@@ -675,16 +694,16 @@ Taints:             node-role.kubernetes.io/control-plane:NoSchedule
 
 ## 资源对象：Ingress/IngressClass
 有了Service之后，我们可以访问这个Service的IP（clusterIP）来请求对应的Pod，但是这只能是在集群内部访问，要想实现外部访问，还需要额外的组件。  
-![](./3.png)  
+![](./png/3.png)  
 要想让外部用户访问此资源，可以使用NodePort，即在node节点上暴漏一个端口出来，但是这个非常不灵活。为了解决此问题，K8s引入了一个新的API资源对象Ingress，它是一个七层的负载均衡器，类似于Nginx。  
-![](./4.png)  
+![](./png/4.png)  
 
 三个概念：Ingress、Ingress Controller、IngressClass
 - Ingress用来定义具体的路由规则，要实现什么样的访问效果；
 - Ingress Controller是实现Ingress定义具体规则的工具或者叫做服务，在K8s里就是具体的Pod；
 - IngressClass是介于Ingress和Ingress Controller之间的一个协调者，它存在的意义在于，当有多个Ingress Controller时，可以让Ingress和Ingress Controller彼此独立，不直接关联，而是通过IngressClass实现关联。  
 
-![](5.png)  
+![](./png/5.png)  
 
 Ingress YAML示例：
 ```yaml
@@ -712,6 +731,9 @@ spec:
               number: 80
 ```
 ```bash
+# 应用
+kubectl apply -f mying.yaml
+
 # 查看ingress
 kubectl get ing
 kubectl describe ing mying
@@ -731,6 +753,9 @@ spec:
   controller: nginx.org/ingress-controller  ##定义要使用哪个controller
 ```
 ```bash
+# 应用
+kubectl apply -f myingc.yaml
+
 # 查看ingressclass
 kubectl get ingressclass
 kubectl describe ingressclass myingc
@@ -826,18 +851,40 @@ kubectl apply -f ingress-controller.yaml
 kubectl get po -n nginx-ingress
 kubectl get deploy -n nginx-ingress
 ```
-测试：
+等待容器running后测试：
 ```bash
 # 将ingress对应的pod端口映射到master上临时测试
 kubectl port-forward -n nginx-ingress ngx-ing-547d6575c7-fhdtt 8888:80 &  
 
 # 测试前，可以修改ng-deploy对应的两个pod里的/usr/share/nginx/html/index.html文件内容，用于区分两个pod
+[root@linyi ~]# kubectl get pod
+NAME                         READY   STATUS             RESTARTS           AGE
+ng-deploy-657ccd794f-h5skt   1/1     Running            0                  8m25s
+ng-deploy-657ccd794f-lcdjf   1/1     Running            0                  8m25s
+[root@linyi ~]# kubectl exec -it ng-deploy-657ccd794f-lcdjf -- bash
 
 # 测试访问
 curl -x127.0.0.1:8888 linyi.com
 ## 或者：
 curl -H 'Host:linyi.com' http://127.0.0.1:8888
 ```
+上面对ingress做端口映射，然后通过其中一个节点的IP来访问ingress只是一种临时方案。那么正常情况或者在生产环境中如何做呢？有三种常用的方案：  
+- Deployment+LoadBalancer模式的Service：  
+如果要把ingress部署在公有云，那用这种方式比较合适。用Deployment部署ingress-controller，创建一个type为LoadBalancer的service关联这组pod。  
+大部分公有云，都会为LoadBalancer的service自动创建一个负载均衡器，通常还绑定了公网地址。  
+只要把域名解析指向该地址，就实现了集群服务的对外暴露。  
+
++ Deployment+NodePort模式的Service：  
+同样用deployment模式部署ingress-controller，并创建对应的服务，但是type为NodePort。这样，ingress就会暴露在集群节点ip的特定端口上。  
+由于nodeport暴露的端口是随机端口，一般会在前面再搭建一套负载均衡器来转发请求。该方式一般用于宿主机是相对固定的环境ip地址不变的场景。  
+NodePort方式暴露ingress虽然简单方便，但是NodePort多了一层NAT，在请求量级很大时可能对性能会有一定影响。
+
+- DaemonSet+HostNetwork+nodeSelector：  
+用DaemonSet结合nodeselector来部署ingress-controller到特定的node上，然后使用HostNetwork直接把该pod与宿主机node的网络打通（如，上面的临时方案kubectl port-forward），直接使用宿主机的80/443端口就能访问服务。  
+这时，ingress-controller所在的node机器就很类似传统架构的边缘节点，比如机房入口的nginx服务器。该方式整个请求链路最简单，性能相对NodePort模式更好。  
+缺点是由于直接利用宿主机节点的网络和端口，一个node只能部署一个ingress-controller pod。比较适合大并发的生产环境使用。
+
+
 
 ## API资源对象PersistentVolume/PersistentVolumeClaim/StorageClass
 持久化相关

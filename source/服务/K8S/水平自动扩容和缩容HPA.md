@@ -60,7 +60,7 @@ vim high-availability-1.21+.yaml
 在image: 这行上面增加一行: - --kubelet-insecure-tls 
 ##见下图
 ```
-![](./8.png)  
+![](./png/8.png)  
 ```bash
 # 应用此YAML文件
 kubectl apply -f high-availability-1.21+.yaml
