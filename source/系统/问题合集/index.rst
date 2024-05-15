@@ -7,3 +7,4 @@
 
     yum仓库.md
     systemctl.md
+    挖矿.md
