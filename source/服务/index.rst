@@ -189,3 +189,4 @@ K8S
     K8S/网络.md
     K8S/高级调度.md
     K8S/存储.md
+    K8S/CRD+Operator.md

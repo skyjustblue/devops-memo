@@ -51,6 +51,14 @@ docker tag ac8efec875ce lwznginx:123
 docker run -itd nginx
 ##把镜像启动为容器，-i表示让容器的标准输入打开，-t表示分配一个伪终端，-d表示后台启动，要把-i -t -d 放到镜像名字前面
 
+# 启动容器，并且在宿主机启动时自动启动
+docker run -itd --restart=always nginx
+##--restart=always 表示当容器退出时自动重启容器
+##--restart=unless-stopped 表示容器在除了docker stop命令以外的任何情况下停止时会自动重启。
+
+### 如果容器已经run过了，可以使用docker update命令更新其重启策略
+docker update --restart=always 容器ID
+
 # 查看容器，-a：显示所有容器（包括停止的）
 docker ps -a
 

@@ -40,6 +40,13 @@ SHOW GRANTS;  # 查看当前用户
 > - `privileges`: 权限，如SELECT, INSERT, UPDATE等，如果要授予所有权限则使用ALL。
 > - `databasename.tablename`: 数据库名和表名，分别用*号表示所有。
 
+```sql
+# 更改root访问限制（将原本的localhost改为任意）
+UPDATE mysql.user SET user.Host='%' where user.User='root';
+
+FLUSH PRIVILEGES;
+```
+
 ## 常用命令
 ```mysql
 # 查询库 

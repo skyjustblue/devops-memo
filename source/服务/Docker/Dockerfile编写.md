@@ -87,7 +87,7 @@ COPY index.html /usr/local/nginx/html/index.html
 # COPY index2.html /usr/local/nginx/html/2.html
 EXPOSE 80
 ENTRYPOINT /usr/local/nginx/sbin/nginx -g "daemon off;"
-## "daemon off;" 表示在前台运行，因为在docker中，后台运行会默认终止掉。
+## "daemon off;" 表示在前台运行，因为在docker中，后台运行服务会终止掉容器。
 ```
 ```bash
 # 编译成镜像
