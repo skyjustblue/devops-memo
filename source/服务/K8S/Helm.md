@@ -668,14 +668,12 @@ EOF
 helm template testrelease .
 ```
 ## 自定义Chart实战
-1.
+1.创建chart包
 ```bash
-# 创建chart包
 helm create  linyi217
 ```
-2.
+2.自定义templates模板文件
 ```bash 
-# 自定义templates模板文件
 ##删除掉默认的模板文件
 cd  linyi217
 rm -rf  templates/*
@@ -804,9 +802,8 @@ nfsPath: /data/nfs/linyi217  ##这个目录需要提前创建好
 nfsServer: 192.168.222.99
 ##注意：假定NFS服务器已经搭建好了
 ```
-3.
+3.安装chart
 ```bash
-# 安装chart
 helm  install  linyi217-release .
 
 # 查看svc
