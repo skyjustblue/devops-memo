@@ -6,8 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import sphinx_rtd_theme
-
 project = 'devops-memo'
 copyright = '2024, fredo'
 author = 'fredo'
@@ -31,16 +29,3 @@ language = 'zh_CN'
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {
-    # 'sticky_navigation': False,  # 导航栏会在页面滚动时固定在页面顶部
-    'collapse_navigation': True,  # ‌导航栏会折叠成一个小的按钮，‌用户可以点击它来展开或收起
-    'navigation_depth': 6,  # 控制导航侧边栏目录深度
-    'includehidden': True,
-    # 'display_version': True,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': True,  # 控制是否对外部链接应用特定的样式
-}
-
-# myst_heading_anchors = 2  # 隐式链接：markdown 内联链接的标题深度
-suppress_warnings = ["myst.header"]
